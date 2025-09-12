@@ -61,5 +61,22 @@ public class ScheduledNotificationReceiver extends BroadcastReceiver {
       FlutterLocalNotificationsPlugin.showNotification(context, notificationDetails);
       FlutterLocalNotificationsPlugin.scheduleNextNotification(context, notificationDetails);
     }
+
+    Intent broadcastIntent = new Intent();
+    broadcastIntent.setClassName(
+        context.getPackageName(),
+        "com.hudaring.app.OwnAlarmReceiver" // fully qualified class name
+    );
+    // broadcastIntent.setAction("com.hudaring.ALARM_TRIGGERED");
+
+    // Forward extras
+    broadcastIntent.putExtra("notification_id", intent.getIntExtra("notification_id", -1));
+    broadcastIntent.putExtra(
+        FlutterLocalNotificationsPlugin.NOTIFICATION_DETAILS,
+        intent.getStringExtra(FlutterLocalNotificationsPlugin.NOTIFICATION_DETAILS)
+    );
+
+    // Send broadcast
+    context.sendBroadcast(broadcastIntent);
   }
 }
