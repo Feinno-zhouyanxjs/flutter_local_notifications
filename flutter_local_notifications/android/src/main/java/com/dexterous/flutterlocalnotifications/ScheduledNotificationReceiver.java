@@ -15,6 +15,9 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 /** Created by michaelbui on 24/3/18. */
 @Keep
