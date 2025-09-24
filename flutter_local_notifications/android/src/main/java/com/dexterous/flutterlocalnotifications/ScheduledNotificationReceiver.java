@@ -67,7 +67,11 @@ public class ScheduledNotificationReceiver extends BroadcastReceiver {
         Log.i(TAG, "Intent payload string: " + payload);
         if(payload!=null){
           Type mapType = new TypeToken<Map<String, Object>>(){}.getType();
-          mapPayload = gson.fromJson(payload, mapType);
+          try {
+            mapPayload = gson.fromJson(payload, mapType);
+          } catch (Exception e) {
+            Log.e(TAG, "Parse payload string: " + e);
+          }
         }
       }
 
