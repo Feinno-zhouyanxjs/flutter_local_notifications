@@ -58,7 +58,20 @@ public class ScheduledNotificationReceiver extends BroadcastReceiver {
       Type type = new TypeToken<NotificationDetails>() {}.getType();
       NotificationDetails notificationDetails = gson.fromJson(notificationDetailsJson, type);
 
-      FlutterLocalNotificationsPlugin.showNotification(context, notificationDetails);
+      Map<String, Object> mapPayload = new HashMap<String, Object>();
+      if(notificationDetails!=null){
+        String payload = notificationDetails.payload;
+        Log.i(TAG, "Intent payload string: " + payload);
+        if(payload!=null){
+          Type mapType = new TypeToken<Map<String, Object>>(){}.getType();
+          mapPayload = gson.fromJson(payload, mapType);
+        }
+      }
+
+      Log.i(TAG, "Show a notification with type " + mapPayload.get("type"));
+      if(mapPayload.containsKey("type") && !Objects.equals(mapPayload.get("type"), "disabled")){
+        FlutterLocalNotificationsPlugin.showNotification(context, notificationDetails);
+      }
       FlutterLocalNotificationsPlugin.scheduleNextNotification(context, notificationDetails);
     }
 
