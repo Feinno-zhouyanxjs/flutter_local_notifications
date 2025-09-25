@@ -76,7 +76,9 @@ public class ScheduledNotificationReceiver extends BroadcastReceiver {
       }
 
       Log.i(TAG, "Show a notification with type " + mapPayload.get("type"));
-      if(mapPayload.containsKey("type") && !Objects.equals(mapPayload.get("type"), "disabled")){
+      if (mapPayload!=null && !mapPayload.isEmpty() && Objects.equals(mapPayload.get("type"), "disabled")) {
+        // FlutterLocalNotificationsPlugin.cancelNotification(context, notificationDetails.id);
+      }else{
         FlutterLocalNotificationsPlugin.showNotification(context, notificationDetails);
       }
       FlutterLocalNotificationsPlugin.scheduleNextNotification(context, notificationDetails);
