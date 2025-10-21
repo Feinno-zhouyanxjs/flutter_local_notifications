@@ -79,13 +79,17 @@ public class ScheduledNotificationReceiver extends BroadcastReceiver {
       if (mapPayload!=null && !mapPayload.isEmpty() && Objects.equals(mapPayload.get("type"), "disabled")) {
         // FlutterLocalNotificationsPlugin.cancelNotification(context, notificationDetails.id);
       }else{
-        int prayerTime = mapPayload.get("prayerTimeInt") != null ? ((Integer) mapPayload.get("prayerTimeInt")).intValue() : -1;
-        if(prayerTime != -1 && (System.currentTimeMillis()/1000L) - prayerTime > (60 * 15) ){
+        int prayerTime = -1;
+        Object prayerTimeObj = mapPayload.get("prayerTimeInt");
+        if (prayerTimeObj instanceof Number) {
+          prayerTime = ((Number) prayerTimeObj).intValue();
+        }
+
+        if (prayerTime != -1 && (System.currentTimeMillis() / 1000L) - prayerTime > (60 * 15)) {
           Log.i(TAG, "Prayer time notification for time: " + prayerTime + " skipped as it is older than 15 minutes.");
-        }else{
+        } else {
           FlutterLocalNotificationsPlugin.showNotification(context, notificationDetails);
         }
-        
       }
       FlutterLocalNotificationsPlugin.scheduleNextNotification(context, notificationDetails);
     }
