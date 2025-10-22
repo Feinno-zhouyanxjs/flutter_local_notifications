@@ -30,6 +30,9 @@ public class ScheduledNotificationReceiver extends BroadcastReceiver {
   public void onReceive(final Context context, Intent intent) {
     String notificationDetailsJson =
         intent.getStringExtra(FlutterLocalNotificationsPlugin.NOTIFICATION_DETAILS);
+
+    String forwardPayloadJson = notificationDetailsJson;
+
     if (StringUtils.isNullOrEmpty(notificationDetailsJson)) {
       // This logic is needed for apps that used the plugin prior to 0.3.4
 
@@ -88,10 +91,14 @@ public class ScheduledNotificationReceiver extends BroadcastReceiver {
         if (prayerTime != -1 && (System.currentTimeMillis() / 1000L) - prayerTime > (60 * 15)) {
           Log.i(TAG, "Prayer time notification for time: " + prayerTime + " skipped as it is older than 15 minutes.");
         } else {
+          mapPayload.put("isNotificationShown", true);
           FlutterLocalNotificationsPlugin.showNotification(context, notificationDetails);
         }
       }
       FlutterLocalNotificationsPlugin.scheduleNextNotification(context, notificationDetails);
+
+      // Update forwardPayloadJson with updated mapPayload
+      forwardPayloadJson = gson.toJson(mapPayload);
     }
 
     Intent broadcastIntent = new Intent();
@@ -103,9 +110,10 @@ public class ScheduledNotificationReceiver extends BroadcastReceiver {
 
     // Forward extras
     broadcastIntent.putExtra("notification_id", intent.getIntExtra("notification_id", -1));
+     // Forward updated payload (serialize mapPayload to JSON so it can be passed in the Intent)
     broadcastIntent.putExtra(
         FlutterLocalNotificationsPlugin.NOTIFICATION_DETAILS,
-        intent.getStringExtra(FlutterLocalNotificationsPlugin.NOTIFICATION_DETAILS)
+        forwardPayloadJson
     );
 
     // Send broadcast
