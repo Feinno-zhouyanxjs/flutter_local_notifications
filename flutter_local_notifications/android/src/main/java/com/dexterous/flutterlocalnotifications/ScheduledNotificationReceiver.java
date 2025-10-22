@@ -31,7 +31,7 @@ public class ScheduledNotificationReceiver extends BroadcastReceiver {
     String notificationDetailsJson =
         intent.getStringExtra(FlutterLocalNotificationsPlugin.NOTIFICATION_DETAILS);
 
-    String forwardPayloadJson = notificationDetailsJson;
+    String forwardNotificationDetailsJson = notificationDetailsJson;
 
     if (StringUtils.isNullOrEmpty(notificationDetailsJson)) {
       // This logic is needed for apps that used the plugin prior to 0.3.4
@@ -97,8 +97,9 @@ public class ScheduledNotificationReceiver extends BroadcastReceiver {
       }
       FlutterLocalNotificationsPlugin.scheduleNextNotification(context, notificationDetails);
 
-      // Update forwardPayloadJson with updated mapPayload
-      forwardPayloadJson = gson.toJson(mapPayload);
+      // Update forwardNotificationDetailsJson with updated mapPayload
+      notificationDetails.payload = gson.toJson(mapPayload);
+      forwardNotificationDetailsJson = gson.toJson(notificationDetails);
     }
 
     Intent broadcastIntent = new Intent();
@@ -113,7 +114,7 @@ public class ScheduledNotificationReceiver extends BroadcastReceiver {
      // Forward updated payload (serialize mapPayload to JSON so it can be passed in the Intent)
     broadcastIntent.putExtra(
         FlutterLocalNotificationsPlugin.NOTIFICATION_DETAILS,
-        forwardPayloadJson
+        forwardNotificationDetailsJson
     );
 
     // Send broadcast
