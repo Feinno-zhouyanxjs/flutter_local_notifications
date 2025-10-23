@@ -78,8 +78,8 @@ public class ScheduledNotificationReceiver extends BroadcastReceiver {
         }
       }
 
-      Log.i(TAG, "Show a notification with type " + mapPayload.get("type"));
       if (mapPayload!=null && !mapPayload.isEmpty() && Objects.equals(mapPayload.get("type"), "disabled")) {
+        Log.i(TAG, "Show a notification with type " + mapPayload.get("type"));
         // FlutterLocalNotificationsPlugin.cancelNotification(context, notificationDetails.id);
       }else{
         int prayerTime = -1;
