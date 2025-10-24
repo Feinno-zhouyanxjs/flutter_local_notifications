@@ -34,8 +34,7 @@ public class ScheduledNotificationReceiver extends BroadcastReceiver {
     String forwardNotificationDetailsJson = notificationDetailsJson;
 
     String payloadType = "";
-    String payloadMode = "";
-    
+
     if (StringUtils.isNullOrEmpty(notificationDetailsJson)) {
       // This logic is needed for apps that used the plugin prior to 0.3.4
 
@@ -83,14 +82,9 @@ public class ScheduledNotificationReceiver extends BroadcastReceiver {
 
       if (mapPayload != null && !mapPayload.isEmpty()) {
         Object typeObj = mapPayload.get("type");
-        Object modeObj = mapPayload.get("mode");
 
         payloadType = typeObj != null
             ? (typeObj instanceof String ? (String) typeObj : String.valueOf(typeObj))
-            : "";
-
-        payloadMode = modeObj != null
-            ? (modeObj instanceof String ? (String) modeObj : String.valueOf(modeObj))
             : "";
       }
 
@@ -116,11 +110,6 @@ public class ScheduledNotificationReceiver extends BroadcastReceiver {
       // Update forwardNotificationDetailsJson with updated mapPayload
       notificationDetails.payload = gson.toJson(mapPayload);
       forwardNotificationDetailsJson = gson.toJson(notificationDetails);
-    }
-
-    if(Objects.equals(payloadMode, "test")){
-      Log.i(TAG, "Notification with test mode. Skip forwarding to OwnAlarmReceiver.");
-      return;
     }
 
     Intent broadcastIntent = new Intent();
