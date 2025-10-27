@@ -118,7 +118,7 @@ public class ScheduledNotificationReceiver extends BroadcastReceiver {
               }
           }
 
-          Logger.getLogger(TAG).info("Active notifications count: " + activeNotifications.length);
+          Log.i(TAG,"Active notifications count: " + activeNotifications.length);
           // If there are more than 6 notifications, cancel all of them except live activity
           if (activeNotifications.length > 6) {
               // for (StatusBarNotification sbn : activeNotifications) {
@@ -149,7 +149,7 @@ public class ScheduledNotificationReceiver extends BroadcastReceiver {
 
             if (oldest != null) {
                 notificationManager.cancel(oldest.getId());
-                Logger.getLogger(TAG).info("Cancelled oldest notification with ID: " + oldest.getId());
+                Log.i(TAG,"Cancelled oldest notification with ID: " + oldest.getId());
             }
           }
           // End check
