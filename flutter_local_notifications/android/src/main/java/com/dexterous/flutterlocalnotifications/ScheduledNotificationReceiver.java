@@ -19,6 +19,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import android.app.NotificationManager;
+import android.service.notification.StatusBarNotification;
+
+
 /** Created by michaelbui on 24/3/18. */
 @Keep
 public class ScheduledNotificationReceiver extends BroadcastReceiver {
@@ -102,6 +106,50 @@ public class ScheduledNotificationReceiver extends BroadcastReceiver {
           Log.i(TAG, "Prayer time notification for time: " + prayerTime + " skipped as it is older than 15 minutes.");
         } else {
           mapPayload.put("isNotificationShown", true);
+          // Check how many active notifications are currently in the tray
+          NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+          StatusBarNotification[] activeNotifications = new StatusBarNotification[0];
+
+          if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+              NotificationManager notificationManagerRaw = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+              if (notificationManagerRaw != null) {
+                  activeNotifications = notificationManagerRaw.getActiveNotifications();
+              }
+          }
+
+          // If there are more than 6 notifications, cancel all of them except live activity
+          if (activeNotifications.length > 6) {
+              // for (StatusBarNotification sbn : activeNotifications) {
+              //     Notification n = sbn.getNotification();
+              //     if (n.extras != null) {
+              //         String originalSource = n.extras.getString("original");
+              //         if ("live_activity".equals(originalSource)) {
+              //             continue; // Don't remove live activity
+              //         }
+              //     }
+              //     notificationManager.cancel(sbn.getId());
+              // }
+            StatusBarNotification oldest = null;
+
+            for (StatusBarNotification sbn : activeNotifications) {
+                Notification n = sbn.getNotification();
+                if (n.extras != null) {
+                    String originalSource = n.extras.getString("original");
+                    if ("live_activity".equals(originalSource)) {
+                        continue; // Skip live activity
+                    }
+                }
+
+                if (oldest == null || sbn.getPostTime() < oldest.getPostTime()) {
+                    oldest = sbn;
+                }
+            }
+
+            if (oldest != null) {
+                notificationManager.cancel(oldest.getId());
+            }
+          }
+          // End check
           FlutterLocalNotificationsPlugin.showNotification(context, notificationDetails);
         }
       }
