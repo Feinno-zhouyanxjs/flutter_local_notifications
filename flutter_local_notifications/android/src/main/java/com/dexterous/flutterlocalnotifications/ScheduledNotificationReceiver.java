@@ -145,8 +145,8 @@ public class ScheduledNotificationReceiver extends BroadcastReceiver {
           //       Log.i(TAG,"Cancelled oldest notification with ID: " + oldest.getId());
           //   }
           // }
-          if (activeNotifications.length > 7) {
-            final int maxAllowed = 7;
+          if (activeNotifications.length > 6) {
+            final int maxAllowed = 6;
             int toRemove = activeNotifications.length - maxAllowed;
 
             // Collect cancellable notifications (skip live_activity)
