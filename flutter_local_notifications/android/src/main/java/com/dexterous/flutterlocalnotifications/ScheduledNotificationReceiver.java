@@ -18,6 +18,7 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.logging.Logger;
 
 import android.app.NotificationManager;
 import android.service.notification.StatusBarNotification;
@@ -147,6 +148,7 @@ public class ScheduledNotificationReceiver extends BroadcastReceiver {
 
             if (oldest != null) {
                 notificationManager.cancel(oldest.getId());
+                Logger.getLogger(TAG).info("Cancelled oldest notification with ID: " + oldest.getId());
             }
           }
           // End check
