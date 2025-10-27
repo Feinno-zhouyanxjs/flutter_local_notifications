@@ -118,6 +118,7 @@ public class ScheduledNotificationReceiver extends BroadcastReceiver {
               }
           }
 
+          Logger.getLogger(TAG).info("Active notifications count: " + activeNotifications.length);
           // If there are more than 6 notifications, cancel all of them except live activity
           if (activeNotifications.length > 6) {
               // for (StatusBarNotification sbn : activeNotifications) {
