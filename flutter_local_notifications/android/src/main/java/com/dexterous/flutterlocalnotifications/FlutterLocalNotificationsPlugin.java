@@ -297,6 +297,20 @@ public class FlutterLocalNotificationsPlugin
             .setOngoing(BooleanUtils.getValue(notificationDetails.ongoing))
             .setSilent(BooleanUtils.getValue(notificationDetails.silent))
             .setOnlyAlertOnce(BooleanUtils.getValue(notificationDetails.onlyAlertOnce));
+    // Create delete intent
+    Intent deleteIntent = new Intent("com.hudaring.NOTIFICATION_DISMISSED");
+    deleteIntent.setPackage(context.getPackageName()); // make it explicit to your app
+    deleteIntent.putExtra("notificationId", notificationDetails.id);
+
+    PendingIntent deletePendingIntent = PendingIntent.getBroadcast(
+        context,
+        notificationDetails.id,
+        deleteIntent,
+        PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+    );
+
+    builder.setDeleteIntent(deletePendingIntent);
+    // End create delete intent
 
     if (notificationDetails.actions != null) {
       // Space out request codes by 16 so even with 16 actions they won't clash
