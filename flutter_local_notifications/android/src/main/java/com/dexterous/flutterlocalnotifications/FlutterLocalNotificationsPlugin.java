@@ -298,9 +298,10 @@ public class FlutterLocalNotificationsPlugin
             .setSilent(BooleanUtils.getValue(notificationDetails.silent))
             .setOnlyAlertOnce(BooleanUtils.getValue(notificationDetails.onlyAlertOnce));
     // Create delete intent
-    Intent deleteIntent = new Intent("com.hudaring.NOTIFICATION_DISMISSED");
+    Intent deleteIntent = new Intent("com.hudaring.app.NOTIFICATION_DISMISSED");
     deleteIntent.setPackage(context.getPackageName()); // make it explicit to your app
     deleteIntent.putExtra("notificationId", notificationDetails.id);
+    deleteIntent.putExtra("original", "alarm");
 
     PendingIntent deletePendingIntent = PendingIntent.getBroadcast(
         context,
