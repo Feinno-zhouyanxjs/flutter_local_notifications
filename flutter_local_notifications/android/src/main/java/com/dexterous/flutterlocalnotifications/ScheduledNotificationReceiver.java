@@ -100,93 +100,96 @@ public class ScheduledNotificationReceiver extends BroadcastReceiver {
         Log.i(TAG, "Show a notification with type " + payloadType);
         // FlutterLocalNotificationsPlugin.cancelNotification(context, notificationDetails.id);
       }else{
-        int prayerTime = -1;
-        Object prayerTimeObj = mapPayload.get("prayerTimeInt");
-        if (prayerTimeObj instanceof Number) {
-          prayerTime = ((Number) prayerTimeObj).intValue();
-        }
+        // int prayerTime = -1;
+        // Object prayerTimeObj = mapPayload.get("prayerTimeInt");
+        // if (prayerTimeObj instanceof Number) {
+        //   prayerTime = ((Number) prayerTimeObj).intValue();
+        // }
 
-        if (prayerTime != -1 && (System.currentTimeMillis() / 1000L) - prayerTime > (60 * 15)) {
-          Log.i(TAG, "Prayer time notification for time: " + prayerTime + " skipped as it is older than 15 minutes.");
-        } else {
-          mapPayload.put("isNotificationShown", true);
-          // Check how many active notifications are currently in the tray
-          NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-          StatusBarNotification[] activeNotifications = new StatusBarNotification[0];
+        // if (prayerTime != -1 && (System.currentTimeMillis() / 1000L) - prayerTime > (60 * 15)) {
+        //   Log.i(TAG, "Prayer time notification for time: " + prayerTime + " skipped as it is older than 15 minutes.");
+        // } else {
+        //   mapPayload.put("isNotificationShown", true);
+        //   // Check how many active notifications are currently in the tray
+        //   NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+        //   StatusBarNotification[] activeNotifications = new StatusBarNotification[0];
 
-          if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-              NotificationManager notificationManagerRaw = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-              if (notificationManagerRaw != null) {
-                  activeNotifications = notificationManagerRaw.getActiveNotifications();
-              }
-          }
+        //   if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+        //       NotificationManager notificationManagerRaw = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        //       if (notificationManagerRaw != null) {
+        //           activeNotifications = notificationManagerRaw.getActiveNotifications();
+        //       }
+        //   }
 
-          Log.i(TAG,"Active notifications count: " + activeNotifications.length);
-          // If there are more than 6 notifications, cancel all of them except live activity
-          // if (activeNotifications.length > 7) {
-          //   StatusBarNotification oldest = null;
+        //   Log.i(TAG,"Active notifications count: " + activeNotifications.length);
+        //   // If there are more than 6 notifications, cancel all of them except live activity
+        //   // if (activeNotifications.length > 7) {
+        //   //   StatusBarNotification oldest = null;
 
-          //   for (StatusBarNotification sbn : activeNotifications) {
-          //       Notification n = sbn.getNotification();
-          //       if (n.extras != null) {
-          //           String originalSource = n.extras.getString("original");
-          //           if ("live_activity".equals(originalSource)) {
-          //               continue; // Skip live activity
-          //           }
-          //       }
+        //   //   for (StatusBarNotification sbn : activeNotifications) {
+        //   //       Notification n = sbn.getNotification();
+        //   //       if (n.extras != null) {
+        //   //           String originalSource = n.extras.getString("original");
+        //   //           if ("live_activity".equals(originalSource)) {
+        //   //               continue; // Skip live activity
+        //   //           }
+        //   //       }
 
-          //       if (oldest == null || sbn.getPostTime() < oldest.getPostTime()) {
-          //           oldest = sbn;
-          //       }
-          //   }
+        //   //       if (oldest == null || sbn.getPostTime() < oldest.getPostTime()) {
+        //   //           oldest = sbn;
+        //   //       }
+        //   //   }
 
-          //   if (oldest != null) {
-          //       notificationManager.cancel(oldest.getId());
-          //       Log.i(TAG,"Cancelled oldest notification with ID: " + oldest.getId());
-          //   }
-          // }
-          if (activeNotifications.length > 6) {
-            final int maxAllowed = 6;
-            int toRemove = activeNotifications.length - maxAllowed;
+        //   //   if (oldest != null) {
+        //   //       notificationManager.cancel(oldest.getId());
+        //   //       Log.i(TAG,"Cancelled oldest notification with ID: " + oldest.getId());
+        //   //   }
+        //   // }
+        //   if (activeNotifications.length > 6) {
+        //     final int maxAllowed = 6;
+        //     int toRemove = activeNotifications.length - maxAllowed;
 
-            // Collect cancellable notifications (skip live_activity)
-            List<StatusBarNotification> candidates = new ArrayList<>();
-            for (StatusBarNotification sbn : activeNotifications) {
-              Notification n = sbn.getNotification();
-              String originalSource = null;
-              if (n != null && n.extras != null) {
-                originalSource = n.extras.getString("original");
-              }
-              if ("live_activity".equals(originalSource)) {
-                continue;
-              }
-              candidates.add(sbn);
-            }
+        //     // Collect cancellable notifications (skip live_activity)
+        //     List<StatusBarNotification> candidates = new ArrayList<>();
+        //     for (StatusBarNotification sbn : activeNotifications) {
+        //       Notification n = sbn.getNotification();
+        //       String originalSource = null;
+        //       if (n != null && n.extras != null) {
+        //         originalSource = n.extras.getString("original");
+        //       }
+        //       if ("live_activity".equals(originalSource)) {
+        //         continue;
+        //       }
+        //       candidates.add(sbn);
+        //     }
 
-            if (!candidates.isEmpty()) {
-              // Sort by post time ascending (oldest first)
-              Collections.sort(candidates, new Comparator<StatusBarNotification>() {
-                @Override
-                public int compare(StatusBarNotification a, StatusBarNotification b) {
-                  return Long.compare(a.getPostTime(), b.getPostTime());
-                }
-              });
+        //     if (!candidates.isEmpty()) {
+        //       // Sort by post time ascending (oldest first)
+        //       Collections.sort(candidates, new Comparator<StatusBarNotification>() {
+        //         @Override
+        //         public int compare(StatusBarNotification a, StatusBarNotification b) {
+        //           return Long.compare(a.getPostTime(), b.getPostTime());
+        //         }
+        //       });
 
-              // Remove as many oldest notifications as needed (or as many candidates exist)
-              int removed = 0;
-              for (StatusBarNotification s : candidates) {
-                if (removed >= toRemove) break;
-                notificationManager.cancel(s.getId());
-                Log.i(TAG, "Cancelled notification with ID: " + s.getId() + " postTime: " + s.getPostTime());
-                removed++;
-              }
-            } else {
-              Log.i(TAG, "No cancellable notifications found (all are live_activity).");
-            }
-          }
-          // End check
-          FlutterLocalNotificationsPlugin.showNotification(context, notificationDetails);
-        }
+        //       // Remove as many oldest notifications as needed (or as many candidates exist)
+        //       int removed = 0;
+        //       for (StatusBarNotification s : candidates) {
+        //         if (removed >= toRemove) break;
+        //         notificationManager.cancel(s.getId());
+        //         Log.i(TAG, "Cancelled notification with ID: " + s.getId() + " postTime: " + s.getPostTime());
+        //         removed++;
+        //       }
+        //     } else {
+        //       Log.i(TAG, "No cancellable notifications found (all are live_activity).");
+        //     }
+        //   }
+        //   // End check
+        //   FlutterLocalNotificationsPlugin.showNotification(context, notificationDetails);
+        // }
+        
+        mapPayload.put("isNotificationShown", true);
+        FlutterLocalNotificationsPlugin.showNotification(context, notificationDetails);
       }
       FlutterLocalNotificationsPlugin.scheduleNextNotification(context, notificationDetails);
 
