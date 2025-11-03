@@ -123,68 +123,68 @@ public class ScheduledNotificationReceiver extends BroadcastReceiver {
 
           Log.i(TAG,"Active notifications count: " + activeNotifications.length);
           // If there are more than 6 notifications, cancel all of them except live activity
-          if (activeNotifications.length > 6) {
-            StatusBarNotification oldest = null;
-
-            for (StatusBarNotification sbn : activeNotifications) {
-                Notification n = sbn.getNotification();
-                if (n.extras != null) {
-                    String originalSource = n.extras.getString("original");
-                    if ("live_activity".equals(originalSource)) {
-                        continue; // Skip live activity
-                    }
-                }
-
-                if (oldest == null || sbn.getPostTime() < oldest.getPostTime()) {
-                    oldest = sbn;
-                }
-            }
-
-            if (oldest != null) {
-                notificationManager.cancel(oldest.getId());
-                Log.i(TAG,"Cancelled oldest notification with ID: " + oldest.getId());
-            }
-          }
-
           // if (activeNotifications.length > 6) {
-          //   final int maxAllowed = 6;
-          //   int toRemove = activeNotifications.length - maxAllowed;
+          //   StatusBarNotification oldest = null;
 
-          //   // Collect cancellable notifications (skip live_activity)
-          //   List<StatusBarNotification> candidates = new ArrayList<>();
           //   for (StatusBarNotification sbn : activeNotifications) {
-          //     Notification n = sbn.getNotification();
-          //     String originalSource = null;
-          //     if (n != null && n.extras != null) {
-          //       originalSource = n.extras.getString("original");
-          //     }
-          //     if ("live_activity".equals(originalSource)) {
-          //       continue;
-          //     }
-          //     candidates.add(sbn);
+          //       Notification n = sbn.getNotification();
+          //       if (n.extras != null) {
+          //           String originalSource = n.extras.getString("original");
+          //           if ("live_activity".equals(originalSource)) {
+          //               continue; // Skip live activity
+          //           }
+          //       }
+
+          //       if (oldest == null || sbn.getPostTime() < oldest.getPostTime()) {
+          //           oldest = sbn;
+          //       }
           //   }
 
-          //   if (!candidates.isEmpty()) {
-          //     // Sort by post time ascending (oldest first)
-          //     Collections.sort(candidates, new Comparator<StatusBarNotification>() {
-          //       @Override
-          //       public int compare(StatusBarNotification a, StatusBarNotification b) {
-          //         return Long.compare(a.getPostTime(), b.getPostTime());
-          //       }
-          //     });
-
-          //     // Remove as many oldest notifications as needed (or as many candidates exist)
-          //     int removed = 0;
-          //     for (StatusBarNotification s : candidates) {
-          //       if (removed >= toRemove) break;
-          //       notificationManager.cancel(s.getId());
-          //       Log.i(TAG, "Cancelled notification with ID: " + s.getId() + " postTime: " + s.getPostTime());
-          //       removed++;
-          //     }
-          //   } else {
-          //     Log.i(TAG, "No cancellable notifications found (all are live_activity).");
+          //   if (oldest != null) {
+          //       notificationManager.cancel(oldest.getId());
+          //       Log.i(TAG,"Cancelled oldest notification with ID: " + oldest.getId());
           //   }
           // }
+
+          if (activeNotifications.length > 6) {
+            final int maxAllowed = 6;
+            int toRemove = activeNotifications.length - maxAllowed;
+
+            // Collect cancellable notifications (skip live_activity)
+            List<StatusBarNotification> candidates = new ArrayList<>();
+            for (StatusBarNotification sbn : activeNotifications) {
+              Notification n = sbn.getNotification();
+              String originalSource = null;
+              if (n != null && n.extras != null) {
+                originalSource = n.extras.getString("original");
+              }
+              if ("live_activity".equals(originalSource)) {
+                continue;
+              }
+              candidates.add(sbn);
+            }
+
+            if (!candidates.isEmpty()) {
+              // Sort by post time ascending (oldest first)
+              Collections.sort(candidates, new Comparator<StatusBarNotification>() {
+                @Override
+                public int compare(StatusBarNotification a, StatusBarNotification b) {
+                  return Long.compare(a.getPostTime(), b.getPostTime());
+                }
+              });
+
+              // Remove as many oldest notifications as needed (or as many candidates exist)
+              int removed = 0;
+              for (StatusBarNotification s : candidates) {
+                if (removed >= toRemove) break;
+                notificationManager.cancel(s.getId());
+                Log.i(TAG, "Cancelled notification with ID: " + s.getId() + " postTime: " + s.getPostTime());
+                removed++;
+              }
+            } else {
+              Log.i(TAG, "No cancellable notifications found (all are live_activity).");
+            }
+          }
           // End check
           FlutterLocalNotificationsPlugin.showNotification(context, notificationDetails);
         // }
