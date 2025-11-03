@@ -96,8 +96,8 @@ public class ScheduledNotificationReceiver extends BroadcastReceiver {
             : "";
       }
 
+      Log.i(TAG, "Show a notification with type " + payloadType);
       if (Objects.equals(payloadType, "disabled")) {
-        Log.i(TAG, "Show a notification with type " + payloadType);
         // FlutterLocalNotificationsPlugin.cancelNotification(context, notificationDetails.id);
       }else{
         // int prayerTime = -1;
